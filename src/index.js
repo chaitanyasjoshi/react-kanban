@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { FirestoreProvider } from '@react-firebase/firestore';
+import firebase from 'firebase';
+
 import App from './components/App';
+import firebaseConfig from './config';
 import reportWebVitals from './reportWebVitals';
 
 import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FirestoreProvider {...firebaseConfig} firebase={firebase}>
+      <App />
+    </FirestoreProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
