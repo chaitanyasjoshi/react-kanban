@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { FirestoreProvider } from '@react-firebase/firestore';
-import firebase from 'firebase';
+import { FirebaseDatabaseProvider } from '@react-firebase/database';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 import App from './components/App';
 import firebaseConfig from './config';
@@ -11,9 +12,9 @@ import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <FirestoreProvider {...firebaseConfig} firebase={firebase}>
+    <FirebaseDatabaseProvider {...firebaseConfig} firebase={firebase}>
       <App />
-    </FirestoreProvider>
+    </FirebaseDatabaseProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

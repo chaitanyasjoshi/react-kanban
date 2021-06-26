@@ -1,5 +1,6 @@
 import { useState, PureComponent } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { FirebaseDatabaseNode } from '@react-firebase/database';
 
 import Column from './Column';
 
