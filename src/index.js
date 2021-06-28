@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { FirebaseDatabaseProvider } from '@react-firebase/database';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
@@ -10,11 +9,11 @@ import reportWebVitals from './reportWebVitals';
 
 import './index.css';
 
+firebase.initializeApp(firebaseConfig);
+
 ReactDOM.render(
   <React.StrictMode>
-    <FirebaseDatabaseProvider {...firebaseConfig} firebase={firebase}>
-      <App />
-    </FirebaseDatabaseProvider>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,6 +1,6 @@
-import { useState, PureComponent } from 'react';
+import { useEffect, useState, PureComponent } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { FirebaseDatabaseNode } from '@react-firebase/database';
+import firebase from 'firebase/app';
 
 import Column from './Column';
 
@@ -9,13 +9,26 @@ import initialData from '../initial-data';
 class InnerList extends PureComponent {
   render() {
     const { column, taskMap, index } = this.props;
-    const tasks = column.taskIds.map((taskId) => taskMap[taskId]);
+
+    // Firebase does not store empty arrays. So check if taskIds exists
+    const tasks = column.taskIds
+      ? column.taskIds.map((taskId) => taskMap[taskId])
+      : [];
     return <Column column={column} tasks={tasks} index={index} />;
   }
 }
 
 function App() {
-  const [state, setState] = useState(initialData);
+  const [state, setState] = useState(null);
+  const database = firebase.database();
+
+  useEffect(() => {
+    let dataRef = database.ref('data/');
+    dataRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      setState(data);
+    });
+  }, [database]);
 
   const onDragStart = (start) => {
     //Callback on drag start
@@ -103,35 +116,45 @@ function App() {
   };
 
   return (
-    <DragDropContext
-      onDragStart={onDragStart}
-      onDragUpdate={onDragUpdate}
-      onDragEnd={onDragEnd}
-    >
-      <Droppable droppableId='all-columns' direction='horizontal' type='column'>
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className='flex'
+    <>
+      {state ? (
+        <DragDropContext
+          onDragStart={onDragStart}
+          onDragUpdate={onDragUpdate}
+          onDragEnd={onDragEnd}
+        >
+          <Droppable
+            droppableId='all-columns'
+            direction='horizontal'
+            type='column'
           >
-            {state.columnOrder.map((columnId, index) => {
-              const column = state.columns[columnId];
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className='flex'
+              >
+                {state.columnOrder.map((columnId, index) => {
+                  const column = state.columns[columnId];
 
-              return (
-                <InnerList
-                  key={column.id}
-                  column={column}
-                  taskMap={state.tasks}
-                  index={index}
-                />
-              );
-            })}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+                  return (
+                    <InnerList
+                      key={column.id}
+                      column={column}
+                      taskMap={state.tasks}
+                      index={index}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </>
   );
 }
 
