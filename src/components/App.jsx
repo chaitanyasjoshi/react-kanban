@@ -62,6 +62,7 @@ function App() {
         columnOrder: newColumnOrder,
       };
       setState(newState);
+      database.ref('data/').set(newState);
       return;
     }
 
@@ -87,17 +88,20 @@ function App() {
       };
 
       setState(newState);
+      database.ref('data/').set(newState);
       return;
     }
 
-    const startTaskIds = Array.from(startColumn.taskIds);
+    const startTaskIds = startColumn.taskIds
+      ? Array.from(startColumn.taskIds)
+      : [];
     startTaskIds.splice(source.index, 1);
     const newStartColumn = {
       ...startColumn,
       taskIds: startTaskIds,
     };
 
-    const endTaskIds = Array.from(endColumn.taskIds);
+    const endTaskIds = endColumn.taskIds ? Array.from(endColumn.taskIds) : [];
     endTaskIds.splice(destination.index, 0, draggableId);
     const newEndColumn = {
       ...endColumn,
@@ -112,7 +116,9 @@ function App() {
         [newEndColumn.id]: newEndColumn,
       },
     };
+
     setState(newState);
+    database.ref('data/').set(newState);
   };
 
   return (
