@@ -3,6 +3,9 @@ import { useState, PureComponent } from 'react';
 
 import Task from './Task';
 
+import { ReactComponent as Pencil } from '../icons/pencil.svg';
+import { ReactComponent as Check } from '../icons/check.svg';
+
 class InnerList extends PureComponent {
   render() {
     return this.props.tasks.map((task, index) => (
@@ -13,6 +16,7 @@ class InnerList extends PureComponent {
 
 export default function Column(props) {
   const [isDraggingOver, setIsDraggingOver] = useState(null);
+  const [editing, setEditing] = useState(false);
 
   return (
     <Draggable draggableId={props.column.id} index={props.index}>
@@ -22,9 +26,29 @@ export default function Column(props) {
           ref={provided.innerRef}
           className='m-2 border border-gray-200 rounded-sm w-56 flex flex-col bg-white'
         >
-          <h3 {...provided.dragHandleProps} className='p-2'>
-            {props.column.title}
-          </h3>
+          {!editing ? (
+            <div className='flex justify-between'>
+              <h3 {...provided.dragHandleProps} className='p-2'>
+                {props.column.title}
+              </h3>
+              <Pencil
+                className='w-8 p-2 cursor-pointer text-gray-600'
+                onClick={() => setEditing(true)}
+              />
+            </div>
+          ) : (
+            <div className='p-2 flex'>
+              <input
+                type='text'
+                className='w-full border border-gray-400 rounded-sm'
+              />
+              <Check
+                className='w-8 pl-2 cursor-pointer text-gray-600'
+                onClick={() => setEditing(false)}
+              />
+            </div>
+          )}
+
           <Droppable droppableId={props.column.id} type='task'>
             {(provided, snapshot) => {
               setIsDraggingOver(snapshot.isDraggingOver);
