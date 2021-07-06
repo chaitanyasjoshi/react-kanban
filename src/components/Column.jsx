@@ -1,5 +1,6 @@
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useState, PureComponent } from 'react';
+import firebase from 'firebase/app';
 
 import Task from './Task';
 
@@ -17,6 +18,9 @@ class InnerList extends PureComponent {
 export default function Column(props) {
   const [isDraggingOver, setIsDraggingOver] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [columnName, setColumnName] = useState(props.column.title);
+
+  const database = firebase.database();
 
   return (
     <Draggable draggableId={props.column.id} index={props.index}>
@@ -40,11 +44,18 @@ export default function Column(props) {
             <div className='p-2 flex'>
               <input
                 type='text'
+                value={columnName}
+                onChange={(event) => setColumnName(event.target.value)}
                 className='w-full border border-gray-400 rounded-sm'
               />
               <Check
                 className='w-8 pl-2 cursor-pointer text-gray-600'
-                onClick={() => setEditing(false)}
+                onClick={() => {
+                  setEditing(false);
+                  database
+                    .ref(`data/columns/${props.column.id}/title/`)
+                    .set(columnName);
+                }}
               />
             </div>
           )}
